@@ -1,0 +1,480 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "id": "initial_id",
+   "metadata": {
+    "collapsed": true,
+    "ExecuteTime": {
+     "end_time": "2026-08-11T17:32:25.278385Z",
+     "start_time": "2026-08-11T17:32:25.118068Z"
+    }
+   },
+   "source": [
+    "from dotenv import load_dotenv\n",
+    "import os\n",
+    "from openai import OpenAI\n",
+    "\n",
+    "load_dotenv()\n",
+    "API_KEY = os.environ[\"GROQ_API_KEY\"]\n",
+    "\n",
+    "client = OpenAI(\n",
+    "    api_key=API_KEY,\n",
+    "    base_url=\"https://api.groq.com/openai/v1\"\n",
+    ")\n",
+    "\n",
+    "MODEL=\"llama-3.3-70b-versatile\"\n",
+    "print(\"Client Ready\")\n",
+    "print(API_KEY[:10])\n"
+   ],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Client Ready\n",
+      "gsk_21WOqM\n"
+     ]
+    }
+   ],
+   "execution_count": 13
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "PART 1.1",
+   "id": "352f07bcc3e6d529"
+  },
+  {
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-08-11T17:32:27.667198Z",
+     "start_time": "2026-08-11T17:32:27.660883Z"
+    }
+   },
+   "cell_type": "code",
+   "source": [
+    "def ask_llm(user_prompt,\n",
+    "            system_prompt=\"You are a helpful assistant.\",\n",
+    "            temperature =0.7,\n",
+    "            max_tokens=500):\n",
+    "\n",
+    "    response= client.chat.completions.create(\n",
+    "        model = MODEL,\n",
+    "        messages =[\n",
+    "        {\"role\": \"system\", \"content\": system_prompt},\n",
+    "      {\"role\": \"user\",   \"content\": user_prompt},\n",
+    "  ],\n",
+    "        temperature=temperature,\n",
+    "        max_tokens=max_tokens,\n",
+    "    )\n",
+    "    return response.choices[0].message.content\n"
+   ],
+   "id": "d13798012b9a94bb",
+   "outputs": [],
+   "execution_count": 14
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "They system are instruction given to the model that affect how it behaves for a prompt they don't affect the models weights or parameters just how the model is needed to do it tasks or like the roles they should assume to perform a task. The user gives the task to the model as to what exactly to do. Example System - You are a system designer. Prompt - Design a system for me. A token is how the model reads every character from the prompt so the API charges by token because that what is takes in and also outputs so the prompt is broken down into token and the output is given in token so it chargers per token",
+   "id": "b4868f4ecdcfe798"
+  },
+  {
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-08-11T17:32:46.603434Z",
+     "start_time": "2026-08-11T17:32:40.796840Z"
+    }
+   },
+   "cell_type": "code",
+   "source": "ask_llm(\"Suggest a name for a savings product for market traders in Accra.\",temperature=0.5)\n",
+   "id": "3305ab60633d0513",
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "\"I'm an artificial intelligence (AI) designed to assist and communicate with users like you. I'm a computer program that uses natural language processing (NLP) to understand and respond to questions, provide information, and engage in conversation. I don't have a personal identity or emotions, but I'm here to help with any questions or topics you'd like to discuss. How can I assist you today?\""
+      ]
+     },
+     "execution_count": 16,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "execution_count": 16
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "PART 1.2",
+   "id": "9aea4ccaae43c1cc"
+  },
+  {
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-08-11T18:09:18.008186Z",
+     "start_time": "2026-08-11T18:09:04.269984Z"
+    }
+   },
+   "cell_type": "code",
+   "source": [
+    "question = \"Suggest a name for a savings product for market traders in Accra\"\n",
+    "\n",
+    "print(\"Temperature Group 0.0\\n\")\n",
+    "for i in range (5):\n",
+    "    print(ask_llm(question, temperature=0.0))\n",
+    "    print(\"--\"*20)\n",
+    "\n",
+    "print(\"\\nTemperature Group 1.2\\n\")\n",
+    "for i in range (5):\n",
+    "    print(ask_llm(question, temperature=1.2))\n",
+    "    print(\"--\"*20)\n"
+   ],
+   "id": "db2b6750dc524b8d",
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Temperature Group 0.0\n",
+      "\n",
+      "Here are a few suggestions for a savings product for market traders in Accra:\n",
+      "\n",
+      "1. **Makola Save**: \"Makola\" is a well-known market in Accra, and this name immediately conveys that the product is tailored to market traders.\n",
+      "2. **Traders' Treasure**: This name emphasizes the idea of saving and accumulating wealth, which is a key goal for market traders.\n",
+      "3. **Accra Amanfoo**: \"Amanfoo\" is a Ghanaian term that means \"savings\" or \"treasury\", and incorporating \"Accra\" into the name helps to establish a local connection.\n",
+      "4. **Market Mobi**: This name is short and catchy, and \"Mobi\" implies mobility and flexibility, which could appeal to market traders who need to manage their finances on-the-go.\n",
+      "5. **Sika Save**: \"Sika\" is the Ghanaian word for \"money\", and this name is simple and straightforward, conveying the product's purpose.\n",
+      "6. **Kokroko Savings**: \"Kokroko\" is a Ghanaian term that means \"gather\" or \"collect\", which could represent the idea of gathering savings over time.\n",
+      "7. **Traders' Fund**: This name emphasizes the idea of a dedicated fund for market traders, which could help to build trust and credibility with the target audience.\n",
+      "\n",
+      "These are just a few ideas to get you started. Ultimately, the best name for your savings product will depend on your target audience, brand identity, and marketing strategy.\n",
+      "----------------------------------------\n",
+      "Here are a few suggestions for a savings product for market traders in Accra:\n",
+      "\n",
+      "1. **Makola Save**: \"Makola\" is a well-known market in Accra, and this name immediately conveys that the product is tailored to market traders.\n",
+      "2. **Traders' Treasure**: This name emphasizes the idea of saving and accumulating wealth, which is a key goal for market traders.\n",
+      "3. **Accra Amanfoo**: \"Amanfoo\" is a Ghanaian term that means \"savings\" or \"treasury\", and incorporating \"Accra\" into the name helps to establish a local connection.\n",
+      "4. **Market Mobi**: This name is short and catchy, and \"Mobi\" implies mobility and flexibility, which could appeal to market traders who need to manage their finances on-the-go.\n",
+      "5. **Sika Save**: \"Sika\" is the Ghanaian word for \"money\", and this name is simple and straightforward, conveying the product's purpose.\n",
+      "6. **Kokroko Savings**: \"Kokroko\" is a Ghanaian term that means \"gather\" or \"collect\", which could represent the idea of gathering savings over time.\n",
+      "7. **Traders' Fund**: This name emphasizes the idea of a dedicated fund for market traders, which could help to build trust and credibility with the target audience.\n",
+      "\n",
+      "These are just a few ideas to get you started. Ultimately, the best name for your savings product will depend on your brand identity, target audience, and marketing strategy.\n",
+      "----------------------------------------\n",
+      "Here are a few suggestions for a savings product for market traders in Accra:\n",
+      "\n",
+      "1. **Makola Save**: \"Makola\" is a well-known market in Accra, so this name could resonate with market traders.\n",
+      "2. **Traders' Treasure**: This name emphasizes the idea of saving and accumulating wealth.\n",
+      "3. **Accra Amanfu**: \"Amanfu\" is a Ghanaian word for \"savings\" or \"treasury\", so this name incorporates local language and culture.\n",
+      "4. **Market Mobi**: This name is short and catchy, and \"Mobi\" implies mobility and flexibility, which could appeal to market traders who need to access their savings on the go.\n",
+      "5. **Sika Saver**: \"Sika\" is the Ghanaian word for \"money\", so this name is straightforward and easy to understand.\n",
+      "6. **Kokroko Savings**: \"Kokroko\" is a Ghanaian word for \"honest\" or \"trustworthy\", which could convey a sense of reliability and security for market traders.\n",
+      "7. **Traders' Fund**: This name is simple and straightforward, emphasizing the idea of a dedicated fund for market traders.\n",
+      "8. **Adanfo Savings**: \"Adanfo\" is a Ghanaian word for \"friends\" or \"partners\", which could suggest a sense of community and cooperation among market traders.\n",
+      "\n",
+      "These are just a few ideas to get you started. Ultimately, the best name for your savings product will depend on your target audience, brand identity, and marketing strategy.\n",
+      "----------------------------------------\n",
+      "Here are a few suggestions for a savings product for market traders in Accra:\n",
+      "\n",
+      "1. **Makola Save**: \"Makola\" is a well-known market in Accra, so this name could resonate with market traders.\n",
+      "2. **Traders' Treasure**: This name emphasizes the idea of saving and accumulating wealth.\n",
+      "3. **Accra Amanfu**: \"Amanfu\" is a Ghanaian word for \"savings\" or \"treasury\", so this name incorporates local language and culture.\n",
+      "4. **Market Mobi**: This name is short and catchy, and \"Mobi\" implies mobility and flexibility, which could appeal to market traders who need to manage their finances on-the-go.\n",
+      "5. **Sika Save**: \"Sika\" is the Ghanaian word for \"money\", so this name is straightforward and easy to understand.\n",
+      "6. **Kokroko Savings**: \"Kokroko\" is a Ghanaian word for \"honest\" or \"trustworthy\", which could convey a sense of reliability and security for market traders.\n",
+      "7. **Traders' Fund**: This name is simple and straightforward, emphasizing the idea of a dedicated fund for market traders.\n",
+      "8. **Adanfo Save**: \"Adanfo\" is a Ghanaian word for \"friends\" or \"partners\", which could suggest a sense of community and cooperation among market traders.\n",
+      "\n",
+      "These are just a few ideas to get you started. Ultimately, the best name for your savings product will depend on your target audience, brand identity, and marketing strategy.\n",
+      "----------------------------------------\n",
+      "Here are a few suggestions for a savings product for market traders in Accra:\n",
+      "\n",
+      "1. **Makola Save**: \"Makola\" is a well-known market in Accra, and this name immediately conveys that the product is tailored to market traders.\n",
+      "2. **Traders' Treasure**: This name emphasizes the idea of saving and accumulating wealth, which is a key goal for market traders.\n",
+      "3. **Accra Amanfoo**: \"Amanfoo\" is a Ghanaian term for \"savings\" or \"treasury\", and this name incorporates the local language and culture.\n",
+      "4. **Market Mobi**: This name is short and catchy, and \"Mobi\" implies mobility and flexibility, which could appeal to market traders who need to manage their finances on-the-go.\n",
+      "5. **Sika Su**: \"Sika\" means \"money\" in the Akan language, and \"Su\" means \"save\" or \"keep\". This name is simple and straightforward, and it immediately communicates the purpose of the product.\n",
+      "6. **Kokroko Savings**: \"Kokroko\" is a Ghanaian term for \"honest\" or \"trustworthy\", and this name conveys a sense of reliability and security, which is essential for a savings product.\n",
+      "7. **Traders' Fund**: This name is straightforward and emphasizes the idea of a collective fund for market traders to save and grow their money.\n",
+      "\n",
+      "These are just a few suggestions, and the final name will depend on your specific product and target audience. I hope this helps inspire you to find the perfect name for your savings product!\n",
+      "----------------------------------------\n",
+      "\n",
+      "Temperature Group 1.2\n",
+      "\n",
+      "Here are a few suggestions for a savings product name for market traders in Accra:\n",
+      "\n",
+      "1. **MakolaSave**: \"Makola\" is a well-known market in Accra, and \"Save\" conveys the idea of putting money aside.\n",
+      "2. **Trader's Treasure**: This name positions the savings product as a valuable resource for market traders to grow their wealth.\n",
+      "3. **Accra Savings Box**: This name emphasizes the idea of a safe and secure place to store savings, with a nod to the local context.\n",
+      "4. **SikaSaver**: \"Sika\" means \"money\" in the Akan language, which is widely spoken in Ghana. This name is catchy and easy to remember.\n",
+      "5. **MarketMali**: \"Mali\" means \"wealth\" or \"prosperity\" in several local languages. This name suggests that the savings product can help market traders achieve financial success.\n",
+      "6. **Kokroko Savings**: \"Kokroko\" means \"-horn\" or \"trumpet\" in the Ga language, which is spoken in the Accra region. This name could represent a call to action or a sound of prosperity.\n",
+      "7. **AgoSave**: \"Ago\" means \"let's go\" or \"Come\" in the Ga language. This name is energetic and encourages market traders to take action and start saving.\n",
+      "\n",
+      "Choose the one that resonates the most with your target audience and product features.\n",
+      "----------------------------------------\n",
+      "Here are a few suggestions for a savings product for market traders in Accra:\n",
+      "\n",
+      "1. **Makola Save**: \"Makola\" is a reference to the famous Makola Market in Accra, which is a hub for market traders. This name is relatable and easy to remember.\n",
+      "2. **MarketBoa**: \"Boa\" means \"help\" or \"support\" in the Ga language, which is spoken in the Accra region. This name conveys the idea of support and assistance for market traders.\n",
+      "3. **Sika Sesen**: \"Sika\" means \"money\" in the Twi language, and \"sesen\" means \"grow\" or \"increase\". This name suggests that the savings product will help market traders grow their money.\n",
+      "4. **TradeSafe**: This name emphasizes the idea of safety and security for market traders' savings, which is essential for their business operations.\n",
+      "5. **Accra Trader's Fund**: This name is straightforward and clearly communicates the target audience and purpose of the savings product.\n",
+      "6. **Kokroko Savings**: \"Kokroko\" means \" gatherings\" or \" meetings\" in the Ga language, which is often used to describe market gatherings. This name has a local flavor and is easy to remember.\n",
+      "7. **Omanye**: \"Omanye\" means \"wealth\" or \"prosperity\" in the Twi language. This name suggests that the savings product will help market traders achieve financial success.\n",
+      "\n",
+      "Choose the one that resonates the most with your target audience and brand identity.\n",
+      "----------------------------------------\n",
+      "Here are a few suggestions for a savings product for market traders in Accra:\n",
+      "\n",
+      "1. **Makola Mede**: \"Makola\" is a famous market in Accra, and \"Mede\" means \"success\" in the Ga language, which is spoken in the region. This name could resonate with market traders.\n",
+      "2. **Sika Kokoo**: \"Sika\" means \"money\" in the Akan language, and \"Kokoo\" means \"gather\" or \"collect\". This name could convey the idea of collecting and saving money.\n",
+      "3. **TradeSafe**: This name suggests a safe and secure way for market traders to save their earnings, which is a key concern for many traders.\n",
+      "4. **Accra Akwantu**: \"Akwantu\" means \"savings\" in the Ga language. This name incorporates the city's name and a relevant word in the local language.\n",
+      "5. **MarketMoesur**: \"Moesur\" is a play on the word \"savings\" and \"measure\", implying a way to measure and grow one's savings.\n",
+      "6. **Kaneshie Kitty**: \"Kaneshie\" is a popular market in Accra, and \"Kitty\" is a colloquial term for a collective savings fund. This name could appeal to traders who frequent the Kaneshie market.\n",
+      "7. **Azumah Savings**: \"Azumah\" is a common Ghanaian surname, and \"Savings\" clearly communicates the product's purpose.\n",
+      "\n",
+      "Choose one that resonates with your target audience and brand identity.\n",
+      "----------------------------------------\n",
+      "Here are a few name suggestions for a savings product for market traders in Accra:\n",
+      "\n",
+      "1. **Makola Save**: \"Makola\" is a well-known market in Accra, so this name immediately conveys that the product is tailored to market traders.\n",
+      "2. **Trader's Vault**: This name emphasizes the idea of a safe and secure place to store savings, which is especially important for market traders who may have cash-intensive businesses.\n",
+      "3. **Accra Market Fund**: This name highlights the product's focus on the Accra market community and suggests a sense of collective savings and support.\n",
+      "4. **Sukuu**: \"Suku\" is a Twi word for \"save\" or \"reserve,\" which adds a local touch to the product's name.\n",
+      "5. **MarketSafe**: This name combines \"market\" and \"safe\" to create a straightforward and memorable name that conveys the product's purpose.\n",
+      "6. **Kokroko Savings**: \"Kokroko\" is a Ghanaian phrase that means \"gather together\" or \"assemble,\" which fits well with the idea of a savings product for market traders.\n",
+      "7. **Adanpu Savings Plan**: \"Adanpu\" is a Ga word for \"prosperity\" or \"success,\" which could inspire market traders to save for a brighter future.\n",
+      "\n",
+      "These are just a few ideas, but ultimately the best name will depend on your target audience, branding, and marketing strategy.\n",
+      "----------------------------------------\n",
+      "Here are a few suggestions for a savings product tailored to market traders in Accra:\n",
+      "\n",
+      "1. **Makola Save**: \"Makola\" is the name of a famous market in Accra, making it a relatable and recognizable name for market traders.\n",
+      "2. **TradeSafe**: This name plays on the idea of keeping your savings safe, which is especially important for market traders who often deal with cash transactions.\n",
+      "3. **MarketGrow**: This name suggests that the savings product will help traders' businesses grow and flourish.\n",
+      "4. **Accra Asete**: \"Asete\" is a Ghanaian word that means \"savings\" or \"wealth\", making it a culturally relevant and memorable name.\n",
+      "5. **Suame Saver**: \"Suame\" is another well-known market in Accra, and \"Saver\" clearly communicates the purpose of the product.\n",
+      "6. **Traders' Treasure**: This name adds a touch of warmth and personality to the product, implying that the savings are a treasure to be cherished.\n",
+      "7. **Kokroko Save**: \"Kokroko\" is a Ghanaian phrase that means \"progress\" or \"growth\", making it a fitting name for a savings product that aims to help market traders achieve their goals.\n",
+      "\n",
+      "These are just a few ideas to get you started. The final name should be memorable, easy to pronounce, and resonate with your target audience.\n",
+      "----------------------------------------\n"
+     ]
+    }
+   ],
+   "execution_count": 21
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "SECTION 2",
+   "id": "7afee94fd22846cd"
+  },
+  {
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-08-11T18:30:45.305436Z",
+     "start_time": "2026-08-11T18:30:45.289664Z"
+    }
+   },
+   "cell_type": "code",
+   "source": [
+    "LETTERS = {\n",
+    "\"L001\": \"\"\"Dear Sir/Madam,\n",
+    "My name is Akosua Mensah and I have been selling provisions at Makola Market for 12 years.\n",
+    "I am applying for a loan of GHS 8,000 to buy a deep freezer and expand into frozen foods.\n",
+    "My current stall makes about GHS 900 profit each month. I have saved GHS 2,500 with your\n",
+    "susu scheme over the past two years and I have never missed a contribution. I can repay\n",
+    "GHS 450 monthly over 20 months. My sister, a teacher, will stand as my guarantor.\n",
+    "Thank you for considering my application.\"\"\",\n",
+    "\n",
+    "\"L002\": \"\"\"Hello,\n",
+    "I am Kwame Boateng, a commercial driver in Kumasi. I need GHS 25,000 urgently to repair my\n",
+    "trotro engine and settle some personal debts. Business has been slow but it will surely\n",
+    "pick up after the festive season. I can pay back whenever the money comes. I do not have\n",
+    "collateral at the moment but God willing everything will be fine. Please help me quickly.\"\"\",\n",
+    "\n",
+    "\"L003\": \"\"\"Dear Loan Committee,\n",
+    "I am Efua Darko, owner of Darko Fashions, a registered dressmaking business in Takoradi\n",
+    "(registration no. BN-2019-4482). I employ three apprentices. I request GHS 15,000 to\n",
+    "purchase two industrial sewing machines and fabric stock ahead of the Christmas season.\n",
+    "Last year my December revenue alone was GHS 22,000; monthly profit averages GHS 2,800.\n",
+    "I hold a fixed deposit of GHS 5,000 with GCB which I can pledge. Proposed repayment:\n",
+    "GHS 1,100 monthly for 15 months. Attached are my sales records for the past 18 months.\"\"\",\n",
+    "\n",
+    "\"L004\": \"\"\"Good day,\n",
+    "My name is Yaw Owusu. I want a loan for my poultry farm at Nsawam. The amount is GHS 12,000\n",
+    "for feed and 500 new layers. I started the farm last year. Sometimes I make good money,\n",
+    "around GHS 1,500 in a good month, but bird flu affected us in March and I lost many birds.\n",
+    "I am rebuilding now. I can repay in 18 months. My uncle has agreed to guarantee the loan\n",
+    "with his taxi.\"\"\",\n",
+    "\n",
+    "\"L005\": \"\"\"Dear Manager,\n",
+    "I am writing on behalf of the Adenta Women's Weaving Cooperative (14 members). We seek\n",
+    "GHS 30,000 to buy a bulk order of yarn directly from the factory, cutting out middlemen and\n",
+    "raising our margins from 15% to about 35%. The cooperative has operated for 6 years and\n",
+    "holds GHS 9,000 in our group account. We propose repayment of GHS 2,000 monthly over\n",
+    "16 months, backed by our group savings and joint liability agreement.\"\"\",\n",
+    "\n",
+    "\"L006\": \"\"\"Hi,\n",
+    "This is Kofi. I saw your advert. I want GHS 50,000 to start a car washing business, a\n",
+    "provision shop, and also import phones from Dubai. I am 22 and full of energy. I have not\n",
+    "started any of these yet but my friends say I am very business minded. I will pay back in\n",
+    "one year when the businesses are booming. No collateral but I am trustworthy.\"\"\",\n",
+    "}\n",
+    "\n",
+    "# Gold-standard labels for three letters (for Section 4 evaluation):\n",
+    "GOLD = {\n",
+    "  \"L001\": {\"applicant_name\": \"Akosua Mensah\", \"amount_ghs\": 8000,  \"purpose\": \"buy deep freezer / expand into frozen foods\",\n",
+    "           \"monthly_profit_ghs\": 900,  \"has_collateral_or_guarantor\": True,  \"repayment_months\": 20},\n",
+    "  \"L003\": {\"applicant_name\": \"Efua Darko\",    \"amount_ghs\": 15000, \"purpose\": \"industrial sewing machines and fabric stock\",\n",
+    "           \"monthly_profit_ghs\": 2800, \"has_collateral_or_guarantor\": True,  \"repayment_months\": 15},\n",
+    "  \"L006\": {\"applicant_name\": \"Kofi\",          \"amount_ghs\": 50000, \"purpose\": \"car wash, provision shop, phone imports\",\n",
+    "           \"monthly_profit_ghs\": None, \"has_collateral_or_guarantor\": False, \"repayment_months\": 12},\n",
+    "}\n",
+    "\n",
+    "print(f\"{len(LETTERS)} letters loaded.\")\n",
+    "print (LETTERS[\"L001\"])\n",
+    "print (LETTERS[\"L002\"])"
+   ],
+   "id": "7334f05dd1d9508",
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "6 letters loaded.\n",
+      "Dear Sir/Madam,\n",
+      "My name is Akosua Mensah and I have been selling provisions at Makola Market for 12 years.\n",
+      "I am applying for a loan of GHS 8,000 to buy a deep freezer and expand into frozen foods.\n",
+      "My current stall makes about GHS 900 profit each month. I have saved GHS 2,500 with your\n",
+      "susu scheme over the past two years and I have never missed a contribution. I can repay\n",
+      "GHS 450 monthly over 20 months. My sister, a teacher, will stand as my guarantor.\n",
+      "Thank you for considering my application.\n",
+      "Hello,\n",
+      "I am Kwame Boateng, a commercial driver in Kumasi. I need GHS 25,000 urgently to repair my\n",
+      "trotro engine and settle some personal debts. Business has been slow but it will surely\n",
+      "pick up after the festive season. I can pay back whenever the money comes. I do not have\n",
+      "collateral at the moment but God willing everything will be fine. Please help me quickly.\n"
+     ]
+    }
+   ],
+   "execution_count": 24
+  },
+  {
+   "metadata": {},
+   "cell_type": "markdown",
+   "source": "SECTION 3",
+   "id": "67786f59365bb279"
+  },
+  {
+   "metadata": {
+    "ExecuteTime": {
+     "end_time": "2026-08-11T18:46:45.348563Z",
+     "start_time": "2026-08-11T18:46:42.518401Z"
+    }
+   },
+   "cell_type": "code",
+   "source": [
+    "letters1= LETTERS[\"L002\"]\n",
+    "letters2 =LETTERS[\"L006\"]\n",
+    "\n",
+    "summary_prompt_v1= f\"\"\"\n",
+    "summarise this:\n",
+    "\n",
+    "{letters1}\n",
+    "\n",
+    "\"\"\"\n",
+    "print(ask_llm(summary_prompt_v1,temperature=0))\n",
+    "print(\"--\"*30)\n",
+    "\n",
+    "summary_prompt_v2= f\"\"\"\n",
+    "summarise this:\n",
+    "\n",
+    "{letters2}\n",
+    "\"\"\"\n",
+    "print(ask_llm(summary_prompt_v2,temperature=0))\n",
+    "\n",
+    "print(\"--\"*50)\n",
+    "\n",
+    "\n",
+    "print(\"\\n -------VERSION 2-------\")\n",
+    "SYSTEM_PROMPT = \"\"\"\n",
+    "You are an assistant to a microfinance loan officer.\n",
+    "\n",
+    "Your task is to summarize loan applications.\n",
+    "\n",
+    "Rules:\n",
+    "- Be factual and neutral.\n",
+    "- Do not invent any information.\n",
+    "- Only use information found in the application.\n",
+    "- Write a concise summary of 3-4 sentences.\n",
+    "\"\"\"\n",
+    "\n",
+    "summary_prompt_v2 = f\"\"\"\n",
+    "Summarize this loan application:\n",
+    "\n",
+    "{letters1}\n",
+    "\"\"\"\n",
+    "print(ask_llm(summary_prompt_v2,\n",
+    "        SYSTEM_PROMPT,\n",
+    "        temperature=0))\n",
+    "print(\"--\"*50)\n",
+    "\n",
+    "summary_prompt_v2 = f\"\"\"\n",
+    "Summarize this loan application:\n",
+    "\n",
+    "{letters2}\n",
+    "\"\"\"\n",
+    "print(ask_llm(summary_prompt_v2,\n",
+    "        SYSTEM_PROMPT,\n",
+    "        temperature=0))\n"
+   ],
+   "id": "4c5f80d08531f4ad",
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Kwame Boateng, a commercial driver in Kumasi, is seeking a loan of GHS 25,000 to repair his vehicle's engine and pay off personal debts. He's experiencing a slow business period but expects it to improve after the festive season and is willing to repay the loan when he can, despite not having collateral at the moment.\n",
+      "------------------------------------------------------------\n",
+      "Kofi, a 22-year-old, is seeking a loan of GHS 50,000 to start three businesses: a car washing service, a provision shop, and a phone import business from Dubai. He has no prior experience, but claims to be \"business-minded\" based on his friends' opinions. He promises to repay the loan within a year, once his businesses are successful, and offers no collateral, relying on his personal trustworthiness.\n",
+      "----------------------------------------------------------------------------------------------------\n",
+      "\n",
+      " -------VERSION 2-------\n",
+      "Kwame Boateng, a commercial driver in Kumasi, has applied for a loan of GHS 25,000. He intends to use the funds to repair his trotro engine and settle personal debts. Mr. Boateng mentions that his business has been slow, but he expects it to improve after the festive season. He does not have collateral to offer at the moment, but is seeking urgent assistance with repayment to be made as funds become available.\n",
+      "----------------------------------------------------------------------------------------------------\n",
+      "Kofi, a 22-year-old, is applying for a loan of GHS 50,000 to start three businesses: a car washing service, a provision shop, and a phone import business from Dubai. He has not yet initiated any of these ventures. Kofi claims to be \"business-minded\" based on feedback from his friends. He intends to repay the loan within one year, relying on the expected success of his businesses, and offers no collateral, instead emphasizing his trustworthiness.\n"
+     ]
+    }
+   ],
+   "execution_count": 25
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 2
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython2",
+   "version": "2.7.6"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
